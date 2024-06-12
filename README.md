@@ -1,1 +1,15 @@
-# isp-acenet
+# ISP Project
+
+## Project Overview
+In this Independent Study Project (ISP), an analysis using Python and other libraries like pandas, dask, numpy, matplotlib, seaborn combined with HPC, will be performed on the household expenditure across Canada and will take a deep dive into the trends, correlation with other categories, comparisons across regions as well as potential future predictions based on historical data and applicable models (for example using time series forecasting methods like Prophet).
+
+#### The primary goals of this project are:
+- Understanding how household expenditures across various categories have changed over time and identifying long-term patterns and trends -> this should also give us a better insight into spending habits in Canada **(Trends)**
+- Getting a better overview on how spending habits vary across different regions within Canada and identify preferences and potential factors per region **(Regional comparison)**
+- Understanding the correlation between different expenditure categories (how they influence each over if at all) to understand how these depend on each other, which can help us get a better understanding of how those spending habits can be influenced to either increase or decrease **(Correlation)**
+- Potentially predicting future household expenditures based on historical data, which can provide insights into financial planning, getting resources and how decisions regarding spending could be made in the future (see if we can find a pattern applicable for future trends based on current and past data using historical data and time series forecasting methods like ARIMA or Prophet for example) **(Predictions)**
+
+
+## Description of the dataset
+The dataset used for this project is in CSV format made available by Statistics Canada, based on a survey of household spending from 2021, which provides the data for the different household expenditures in Canada between the years 2010 and 2021. It allows us to see how much has been spent for different categories, when having a look at the "VALUE" column (this is the amount spent in the specified "UOM" - unit of measurement which is in Dollars for all entries, numbers here are integers) and the "Household expenditures, summary-level categories" column (this is a column containing string values which specify the category the spending falls under, i.e. total expenditure or food expenditure, shelter etc.). The "REF_DATE" column allows us to know what year the specific entry applies to (integer) and the "GEO" column provides insight into what specific region the data is for or whether that is the average for Canada (only include the 10 specified provinces).
+The "SCALAR_ID" and "SCALAR_FACTOR" columns tell us that we don't have to apply any scaling factors since each entry for "SCALAR_ID" is 0 and units for "SCALAR_FACTOR", which indicate that these values are already in the correct units and no scaling is required. The "Statistic" column lets us know that all the values for the expenditures represent the average expenditure per household for each category.
