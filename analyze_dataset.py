@@ -1,3 +1,7 @@
+# this is a python script to analyze the dataset in parallel and generate plots
+# planned to be used inside a job script on Siku
+# uses model from sklearn and data visualization tools
+
 import pandas as pd
 import numpy as np
 import seaborn as sns
