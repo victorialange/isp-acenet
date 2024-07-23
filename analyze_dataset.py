@@ -29,7 +29,6 @@ def add_percentage(ax):
         if height > 0:
             total = sum([p.get_height() for p in ax.patches if p.get_x() == x])
             percentage = f'{height / total * 100:.1f}%'
-            print('height', height)
             # Adjust the vertical position based on the height of the bar
             offset = height * 0.3 if height < 15 else height * 0
             ax.annotate(percentage, (x + width / 2, y + height + offset), ha='center', va='bottom', fontsize=10, color='black', rotation=22.5, bbox=dict(boxstyle="round,pad=0.3", edgecolor="none", facecolor="white", alpha=0.5))
@@ -236,7 +235,6 @@ def main():
     add_percentage(axes[0, 0])
 
     # Plot 8: Main Reason for Not Using Care and School Attendance
-    print('main reason not using care', df['Main_Reason_Not_Using_Care'])
     df_reason_school = df.groupby(['Main_Reason_Not_Using_Care', 'School_Attendance']).size().unstack().fillna(0)
     df_reason_school.plot(kind='bar', stacked=True, ax=axes[0, 1])
     axes[0, 1].set_title('Main Reason for Not Using Care vs. School Attendance')
@@ -276,10 +274,15 @@ def main():
         'Occupation_Spouse'
     ]
     
+    # Filtered relevant columns for analysis
     df_filtered = df[critical_columns]
+
+    # Use aggregated employment status and work schedule type columns
+    df_filtered['Combined_Employment_Status'] = df_filtered.apply(aggregate_employment_status, axis=1)
+    df_filtered['Combined_Work_Schedule_Type'] = df_filtered.apply(aggregate_work_schedule, axis=1)
     
-    X = df[['Total_Household_Income_Grouped', 'Annual_Cost_Care_Total', 'Work_Schedule_Type_Respondent', 'Work_Schedule_Type_Spouse']]
-    y = df['Main_Care_Arrangement']
+    X = df_filtered
+    y = df_filtered['Main_Care_Arrangement']
 
     # Convert categorical data to numeric
     X = pd.get_dummies(X, drop_first=True)
@@ -307,6 +310,17 @@ def main():
     print(conf_matrix)
     print("Classification Report:")
     print(class_report)
+
+    # Plot confusion matrix
+    plt.figure(figsize=(10, 7))
+    sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=rf_model.classes_, yticklabels=rf_model.classes_)
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+    plt.title('Confusion Matrix')
+    
+    plt.tight_layout()
+    plt.savefig('model/confusion_matrix.png')
+    plt.close()
 
     # Feature Importance
     feature_importance = rf_model.feature_importances_
