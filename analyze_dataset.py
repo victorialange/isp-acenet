@@ -279,7 +279,7 @@ def main():
     df_filtered.loc[:, 'Combined_Work_Schedule_Type'] = df_filtered.apply(aggregate_work_schedule, axis=1)
 
     X = df_filtered
-    y = df_filtered['Main_Care_Arrangement']
+    y = df_filtered['Satisfaction_Balance_Job_Home_Life']
 
     # Convert categorical data to numeric
     X = pd.get_dummies(X, drop_first=True)
@@ -323,8 +323,10 @@ def main():
     feature_importance = rf_model.feature_importances_
     features = X.columns
     importance_df = pd.DataFrame({'Feature': features, 'Importance': feature_importance}).sort_values(by='Importance', ascending=False)
+    pd.set_option('display.max_colwidth', None)
+    
     print("\nFeature Importance:")
-    print(importance_df)
+    print(importance_df.head(25))
 
     # Save the model
     joblib.dump(rf_model, 'model/random_forest_model.pkl')
