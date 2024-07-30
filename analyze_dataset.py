@@ -112,9 +112,6 @@ def main():
     ]
     df = replace_valid_skip_with_nan(df, numeric_columns)
 
-    # Handle infinite values explicitly
-    df.replace([np.inf, -np.inf], np.nan, inplace=True)
-
     # Midpoint dictionaries
     cost_midpoint_dict = {
         '$0 per year': 0,
@@ -133,37 +130,33 @@ def main():
     }
 
     # Apply the midpoint conversion
-    df['Annual_Cost_Daycare'] = df['Annual_Cost_Daycare'].apply(range_to_midpoint, args=(cost_midpoint_dict,))
-    df['Annual_Cost_Relative_Care'] = df['Annual_Cost_Relative_Care'].apply(range_to_midpoint, args=(cost_midpoint_dict,))
-    df['Annual_Cost_Family_Care'] = df['Annual_Cost_Family_Care'].apply(range_to_midpoint, args=(cost_midpoint_dict,))
-    df['Annual_Cost_Before_After_School'] = df['Annual_Cost_Before_After_School'].apply(range_to_midpoint, args=(cost_midpoint_dict,))
-    df['Annual_Cost_Other_Care'] = df['Annual_Cost_Other_Care'].apply(range_to_midpoint, args=(cost_midpoint_dict,))
-    df['Annual_Cost_Care_Total'] = df['Annual_Cost_Care_Total'].apply(range_to_midpoint, args=(cost_midpoint_dict,))
-    df['Total_Household_Income_Grouped'] = df['Total_Household_Income_Grouped'].apply(range_to_midpoint, args=(total_income_midpoint_dict,))
+    df.loc[:,'Annual_Cost_Daycare'] = df['Annual_Cost_Daycare'].apply(range_to_midpoint, args=(cost_midpoint_dict,))
+    df.loc[:,'Annual_Cost_Relative_Care'] = df['Annual_Cost_Relative_Care'].apply(range_to_midpoint, args=(cost_midpoint_dict,))
+    df.loc[:,'Annual_Cost_Family_Care'] = df['Annual_Cost_Family_Care'].apply(range_to_midpoint, args=(cost_midpoint_dict,))
+    df.loc[:,'Annual_Cost_Before_After_School'] = df['Annual_Cost_Before_After_School'].apply(range_to_midpoint, args=(cost_midpoint_dict,))
+    df.loc[:,'Annual_Cost_Other_Care'] = df['Annual_Cost_Other_Care'].apply(range_to_midpoint, args=(cost_midpoint_dict,))
+    df.loc[:,'Annual_Cost_Care_Total'] = df['Annual_Cost_Care_Total'].apply(range_to_midpoint, args=(cost_midpoint_dict,))
+    df.loc[:,'Total_Household_Income_Grouped'] = df['Total_Household_Income_Grouped'].apply(range_to_midpoint, args=(total_income_midpoint_dict,))
 
     # print base statistics for numerical columns
     print(df[numeric_columns].describe(include='all'))
 
     # Filter out provinces with zero respondents to avoid plotting inconsistencies
     province_count = df['Province'].value_counts()
-    print("Province value counts:")
-    print(df['Province'].value_counts())
-
-    # Ensure all provinces are included in the plots
-    provinces = df['Province'].unique()
+    print("Province value counts:", province_count)
     
     # Exploratory Data Analysis (EDA)
     # Increase figure size for better readability
     # Plotting the critical analysis
     # Remove rows with NaN values in critical numerical columns
-    df_cleaned = df.dropna(subset=['Annual_Cost_Care_Total', 'Total_Household_Income_Grouped'])
+    df_cleaned = df.dropna(subset=['Annual_Cost_Care_Total', 'Total_Household_Income_Grouped']).copy()
 
     # Create subplots
     fig, axes = plt.subplots(nrows=3, ncols=2, figsize=(20, 25))
 
     # Aggregate employment status & work schedule type for simpler chart
-    df['Combined_Employment_Status'] = df.apply(aggregate_employment_status, axis=1)
-    df_cleaned['Combined_Work_Schedule_Type'] = df.apply(aggregate_work_schedule, axis=1)
+    df.loc[:, 'Combined_Employment_Status'] = df.apply(aggregate_employment_status, axis=1)
+    df_cleaned.loc[:, 'Combined_Work_Schedule_Type'] = df.apply(aggregate_work_schedule, axis=1)
 
     # Plot 1: Distribution of Total Annual Child Care Costs
     sns.histplot(df_cleaned['Annual_Cost_Care_Total'], bins=20, kde=True, ax=axes[0, 0])
@@ -279,12 +272,12 @@ def main():
     ]
     
     # Filtered relevant columns for analysis
-    df_filtered = df[critical_columns]
+    df_filtered = df[critical_columns].copy()
 
     # Use aggregated employment status and work schedule type columns
-    df_filtered['Combined_Employment_Status'] = df_filtered.apply(aggregate_employment_status, axis=1)
-    df_filtered['Combined_Work_Schedule_Type'] = df_filtered.apply(aggregate_work_schedule, axis=1)
-    
+    df_filtered.loc[:, 'Combined_Employment_Status'] = df_filtered.apply(aggregate_employment_status, axis=1)
+    df_filtered.loc[:, 'Combined_Work_Schedule_Type'] = df_filtered.apply(aggregate_work_schedule, axis=1)
+
     X = df_filtered
     y = df_filtered['Main_Care_Arrangement']
 
